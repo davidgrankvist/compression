@@ -1,10 +1,11 @@
 ﻿using Compression.Lib.Framework;
 using Compression.Test.Encoders;
+using Compression.Test.Helpers;
 
 namespace Compression.Test
 {
 	[TestClass]
-	public partial class PipelineBuilderTest
+	public class PipelineBuilderTest
 	{
 		[TestMethod]
 		public void ShouldThrowIfBuildingWithoutAddingMiddleware()

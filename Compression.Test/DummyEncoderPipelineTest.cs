@@ -1,5 +1,6 @@
 ﻿using Compression.Lib.Framework;
 using Compression.Test.Encoders;
+using Compression.Test.Helpers;
 
 namespace Compression.Test
 {
