@@ -6,6 +6,13 @@ namespace Compression.Test
 	{
 		public static void CheckPipeline(EncoderPipeline pipeline, byte[] input, byte[] expectedOutput)
 		{
+			var output = RunPipeline(pipeline, input);
+
+			AssertExtensions.SequenceEqual(expectedOutput, output);
+		}
+
+		public static byte[] RunPipeline(EncoderPipeline pipeline, byte[] input)
+		{
 			var outputBuffer = new byte[input.Length];
 
 			using (var inputStream = new MemoryStream(input))
@@ -14,7 +21,7 @@ namespace Compression.Test
 				pipeline.Process(inputStream, outputStream);
 			}
 
-			AssertExtensions.SequenceEqual(expectedOutput, outputBuffer);
+			return outputBuffer;
 		}
 
 		public static IEnumerable<IEncoderMiddleware> GetMiddleWares(IEncoderMiddleware middleware)

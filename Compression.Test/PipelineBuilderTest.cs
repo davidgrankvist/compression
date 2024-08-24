@@ -20,8 +20,8 @@ namespace Compression.Test
 			var builder = new EncoderPipelineBuilder();
 			Assert.ThrowsException<InvalidOperationException>(
 				() => builder
-						.Add(new StubMiddleware())
-						.Add(new StubMiddleware())
+						.Add(new StubEncoder())
+						.Add(new StubEncoder())
 			);
 		}
 

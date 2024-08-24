@@ -2,7 +2,7 @@
 
 namespace Compression.Test
 {
-	public class StubMiddleware : IEncoderMiddleware
+	internal class StubEncoder : IEncoderMiddleware
 	{
 		public IEncoderMiddleware? Next => throw new NotImplementedException();
 
