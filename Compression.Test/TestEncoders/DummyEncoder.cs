@@ -1,6 +1,6 @@
 ﻿using Compression.Lib.Framework;
 
-namespace Compression.Lib.Encoders
+namespace Compression.Test.Encoders
 {
 	public class DummyEncoder : EncoderMiddlewareBase
 	{

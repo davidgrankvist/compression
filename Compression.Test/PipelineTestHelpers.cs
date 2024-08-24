@@ -16,5 +16,23 @@ namespace Compression.Test
 
 			AssertExtensions.SequenceEqual(expectedOutput, outputBuffer);
 		}
+
+		public static IEnumerable<IEncoderMiddleware> GetMiddleWares(IEncoderMiddleware middleware)
+		{
+			if (middleware.Next == null)
+			{
+				return [middleware];
+			}
+
+			var middlewares = new List<IEncoderMiddleware>();
+			var current = middleware;
+			while (current != null)
+			{
+				middlewares.Add(current);
+				current = current.Next;
+			}
+
+			return middlewares;
+		}
 	}
 }

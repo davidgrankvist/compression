@@ -2,25 +2,25 @@
 {
     public abstract class EncoderMiddlewareBase : IEncoderMiddleware
     {
-        private readonly IEncoderMiddleware? next;
+        public IEncoderMiddleware? Next { get; internal set; }
 
         protected EncoderMiddlewareBase(IEncoderMiddleware? next = null)
         {
-            this.next = next;
+            Next = next;
         }
 
         public bool Encode(byte input, out byte? output)
         {
             var encoded = EncodeByte(input);
 
-            if (next == null || !encoded.HasValue)
+            if (Next == null || !encoded.HasValue)
             {
                 output = encoded;
                 return encoded.HasValue;
             }
 
-            var didEncode = next.Encode(encoded.Value, out var nextEncoded);
-            output = nextEncoded;
+            var didEncode = Next.Encode(encoded.Value, out var NextEncoded);
+            output = NextEncoded;
             return didEncode;
         }
 
@@ -28,7 +28,7 @@
         {
             var encoded = FlushByte();
 
-            if (next == null)
+            if (Next == null)
             {
                 flushed = encoded;
                 return encoded.HasValue;
@@ -36,16 +36,16 @@
 
             if (!encoded.HasValue)
             {
-                var buffering = next.Flush(out var nextFlushed);
-                flushed = nextFlushed;
+                var buffering = Next.Flush(out var NextFlushed);
+                flushed = NextFlushed;
                 return buffering;
             }
 
-            next.Encode(encoded.Value, out var nextEncoded);
-            flushed = nextEncoded;
+            Next.Encode(encoded.Value, out var NextEncoded);
+            flushed = NextEncoded;
 
             /*
-			 * If the next middleware buffered the flushed byte, then the client code
+			 * If the Next middleware buffered the flushed byte, then the client code
 			 * needs to keep calling Flush
 			 */
             return true;
