@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compression.App", "Compress
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Compression.Lib", "Compression.Lib\Compression.Lib.csproj", "{3B830EFB-7F0F-4881-AEF0-84A7C27D0A26}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compression.Test", "Compression.Test\Compression.Test.csproj", "{B836FB9E-1C7D-48F1-877E-F2FF3FB12891}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{3B830EFB-7F0F-4881-AEF0-84A7C27D0A26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B830EFB-7F0F-4881-AEF0-84A7C27D0A26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B830EFB-7F0F-4881-AEF0-84A7C27D0A26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B836FB9E-1C7D-48F1-877E-F2FF3FB12891}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B836FB9E-1C7D-48F1-877E-F2FF3FB12891}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B836FB9E-1C7D-48F1-877E-F2FF3FB12891}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B836FB9E-1C7D-48F1-877E-F2FF3FB12891}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

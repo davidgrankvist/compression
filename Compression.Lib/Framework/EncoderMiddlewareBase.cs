@@ -1,6 +1,6 @@
 ﻿namespace Compression.Lib.Framework
 {
-    internal abstract class EncoderMiddlewareBase : IEncoderMiddleware
+    public abstract class EncoderMiddlewareBase : IEncoderMiddleware
     {
         private readonly IEncoderMiddleware? next;
 
