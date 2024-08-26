@@ -15,5 +15,15 @@ namespace Compression.Test
 		{
 			throw new NotImplementedException();
 		}
+
+		public bool FlushOutput(out byte? flushed)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool HasPendingOutput()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
