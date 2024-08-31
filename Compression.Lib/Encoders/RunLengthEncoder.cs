@@ -2,172 +2,172 @@
 
 namespace Compression.Lib.Encoders
 {
-	public class RunLengthEncoder : EncoderMiddlewareBase
-	{
-		private const byte MaxCount = byte.MaxValue;
+    public class RunLengthEncoder : EncoderMiddlewareBase
+    {
+        private const byte MaxCount = byte.MaxValue;
 
-		private byte count;
-		private byte? current;
+        private byte count;
+        private byte? current;
 
-		private Queue<byte> inputQueue;
-		private byte? countResult;
-		private byte? valueResult;
+        private Queue<byte> inputQueue;
+        private byte? countResult;
+        private byte? valueResult;
 
-		private enum State
-		{
-			Counting,
-			OutputCount,
-			OutputValue,
-			Flush,
-			Done,
-		}
+        private enum State
+        {
+            Counting,
+            OutputCount,
+            OutputValue,
+            Flush,
+            Done,
+        }
 
-		private State state;
+        private State state;
 
         public RunLengthEncoder(IEncoderMiddleware? next = null) : base(next)
         {
-			current = null;
-			inputQueue = new Queue<byte>();
-			countResult = null;
-			valueResult = null;
+            current = null;
+            inputQueue = new Queue<byte>();
+            countResult = null;
+            valueResult = null;
         }
 
         protected override byte? EncodeByte(byte input)
-		{
-			byte? result = null;
-			switch (state)
-			{
-				case State.Counting:
-					result = HandleCounting(input);
-					break;
-				case State.OutputCount:
-					result = HandleOutputCount(input);
-					break;
-				case State.OutputValue:
-					result = HandleOutputValue(input);
-					break;
-				default:
-					throw new InvalidOperationException($"Unexpected state {state} while encoding");
-			}
+        {
+            byte? result = null;
+            switch (state)
+            {
+                case State.Counting:
+                    result = HandleCounting(input);
+                    break;
+                case State.OutputCount:
+                    result = HandleOutputCount(input);
+                    break;
+                case State.OutputValue:
+                    result = HandleOutputValue(input);
+                    break;
+                default:
+                    throw new InvalidOperationException($"Unexpected state {state} while encoding");
+            }
 
-			return result;
-		}
+            return result;
+        }
 
-		private byte? HandleCounting(byte input)
-		{
-			var currentInput = input;
-			if (inputQueue.Count > 0)
-			{
-				currentInput = inputQueue.Dequeue();
-				inputQueue.Enqueue(input);
-			}
+        private byte? HandleCounting(byte input)
+        {
+            var currentInput = input;
+            if (inputQueue.Count > 0)
+            {
+                currentInput = inputQueue.Dequeue();
+                inputQueue.Enqueue(input);
+            }
 
-			if (!current.HasValue)
-			{
-				current = input;
-			}
+            if (!current.HasValue)
+            {
+                current = input;
+            }
 
-			if (current == currentInput && count < MaxCount)
-			{
-				count++;
-				return null;
-			}
+            if (current == currentInput && count < MaxCount)
+            {
+                count++;
+                return null;
+            }
 
-			countResult = count;
-			valueResult = current;
-			
-			current = currentInput;
-			count = 1;
-			state = State.OutputCount;
+            countResult = count;
+            valueResult = current;
 
-			return null;
-		}
+            current = currentInput;
+            count = 1;
+            state = State.OutputCount;
 
-		private byte? HandleOutputCount(byte input)
-		{
-			inputQueue.Enqueue(input);
+            return null;
+        }
 
-			return OutputCount();
-		}
+        private byte? HandleOutputCount(byte input)
+        {
+            inputQueue.Enqueue(input);
 
-		private byte? OutputCount()
-		{
-			var result = countResult;
-			countResult = null;
-			state = State.OutputValue;
+            return OutputCount();
+        }
 
-			return result;
-		}
+        private byte? OutputCount()
+        {
+            var result = countResult;
+            countResult = null;
+            state = State.OutputValue;
 
-		private byte? HandleOutputValue(byte input)
-		{
-			inputQueue.Enqueue(input);
+            return result;
+        }
 
-			return OutputValue();
-		}
+        private byte? HandleOutputValue(byte input)
+        {
+            inputQueue.Enqueue(input);
 
-		private byte? OutputValue()
-		{
-			var result = valueResult;
-			valueResult = null;
-			state = State.Counting;
+            return OutputValue();
+        }
 
-			return result;
-		}
+        private byte? OutputValue()
+        {
+            var result = valueResult;
+            valueResult = null;
+            state = State.Counting;
 
-		protected override byte? FlushByte()
-		{
-			if (state == State.Done)
-			{
-				return null;
-			}
+            return result;
+        }
 
-			if (state == State.Flush)
-			{
-				state = State.Done;
-				return current;
-			}
+        protected override byte? FlushByte()
+        {
+            if (state == State.Done)
+            {
+                return null;
+            }
 
-			// consume input queue
-			byte? result = FlushOutputByte();
-			if (result.HasValue)
-			{
-				return result;
-			}
+            if (state == State.Flush)
+            {
+                state = State.Done;
+                return current;
+            }
 
-			// interrupt ongoing count (if any)
-			if (state == State.Counting)
-			{
-				result = count;
-				state = State.Flush;
-			}
+            // consume input queue
+            byte? result = FlushOutputByte();
+            if (result.HasValue)
+            {
+                return result;
+            }
 
-			return result;
-		}
+            // interrupt ongoing count (if any)
+            if (state == State.Counting)
+            {
+                result = count;
+                state = State.Flush;
+            }
 
-		protected override byte? FlushOutputByte()
-		{
-			if (state == State.OutputCount)
-			{
-				return OutputCount();
-			}
-			if (state == State.OutputValue)
-			{
-				return OutputValue();
-			}
+            return result;
+        }
 
-			byte? result = null;
-			if (inputQueue.Count > 0)
-			{
-				var currentInput = inputQueue.Dequeue();
-				result = EncodeByte(currentInput);
-			}
-			return result;
-		}
+        protected override byte? FlushOutputByte()
+        {
+            if (state == State.OutputCount)
+            {
+                return OutputCount();
+            }
+            if (state == State.OutputValue)
+            {
+                return OutputValue();
+            }
 
-		public override bool HasPendingOutput()
-		{
-			return state == State.OutputCount || state == State.OutputValue;
-		}
-	}
+            byte? result = null;
+            if (inputQueue.Count > 0)
+            {
+                var currentInput = inputQueue.Dequeue();
+                result = EncodeByte(currentInput);
+            }
+            return result;
+        }
+
+        public override bool HasPendingOutput()
+        {
+            return state == State.OutputCount || state == State.OutputValue;
+        }
+    }
 }

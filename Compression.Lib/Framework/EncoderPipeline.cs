@@ -4,7 +4,7 @@
     {
         public IEncoderMiddleware Middleware { get; }
 
-		public EncoderPipeline(IEncoderMiddleware middleware)
+        public EncoderPipeline(IEncoderMiddleware middleware)
         {
             Middleware = middleware;
         }
@@ -23,34 +23,34 @@
 
         private void ConsumeInputByte(byte received, Stream output)
         {
-			if (Middleware.Encode(received, out var encoded) && encoded.HasValue)
-			{
-				output.WriteByte(encoded.Value);
-			}
-		}
+            if (Middleware.Encode(received, out var encoded) && encoded.HasValue)
+            {
+                output.WriteByte(encoded.Value);
+            }
+        }
 
         private void FlushPendingOutput(Stream output)
         {
-			var shouldFlush = false;
-			do
-			{
-				shouldFlush = Middleware.FlushOutput(out var flushed);
-				if (flushed.HasValue)
-				{
-					output.WriteByte(flushed.Value);
-				}
-			} while (shouldFlush);
-		}
+            var shouldFlush = false;
+            do
+            {
+                shouldFlush = Middleware.FlushOutput(out var flushed);
+                if (flushed.HasValue)
+                {
+                    output.WriteByte(flushed.Value);
+                }
+            } while (shouldFlush);
+        }
 
         private void FlushBufferedInput(Stream output)
         {
-			while (Middleware.Flush(out var encoded))
-			{
-				if (encoded.HasValue)
-				{
-					output.WriteByte(encoded.Value);
-				}
-			}
-		}
+            while (Middleware.Flush(out var encoded))
+            {
+                if (encoded.HasValue)
+                {
+                    output.WriteByte(encoded.Value);
+                }
+            }
+        }
     }
 }

@@ -2,21 +2,21 @@
 
 namespace Compression.Test.Encoders
 {
-	internal class DummyEncoder : EncoderMiddlewareBase
-	{
+    internal class DummyEncoder : EncoderMiddlewareBase
+    {
         public DummyEncoder(IEncoderMiddleware? next = null) : base(next)
         {
-            
+
         }
 
         protected override byte? EncodeByte(byte input)
-		{
-			return input;
-		}
+        {
+            return input;
+        }
 
-		protected override byte? FlushByte()
-		{
-			return null;
-		}
-	}
+        protected override byte? FlushByte()
+        {
+            return null;
+        }
+    }
 }

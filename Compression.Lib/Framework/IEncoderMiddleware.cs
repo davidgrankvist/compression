@@ -17,10 +17,10 @@
         /// </summary>
         bool FlushOutput(out byte? flushed);
 
-		/// <summary>
-		/// Check if any output is buffered. This is for encoders with variable size output.
-		/// </summary>
-		bool HasPendingOutput();
+        /// <summary>
+        /// Check if any output is buffered. This is for encoders with variable size output.
+        /// </summary>
+        bool HasPendingOutput();
 
         IEncoderMiddleware? Next { get; }
     }
