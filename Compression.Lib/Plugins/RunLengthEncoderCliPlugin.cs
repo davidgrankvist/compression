@@ -3,7 +3,7 @@ using Compression.Lib.Framework;
 
 namespace Compression.Lib.Plugins
 {
-    internal class RunLengthEncoderCliPlugin : ICliEncoderPlugin
+    public class RunLengthEncoderCliPlugin : ICliEncoderPlugin
     {
         public string Name => "rle";
 

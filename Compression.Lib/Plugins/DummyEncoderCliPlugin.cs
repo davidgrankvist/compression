@@ -3,7 +3,7 @@ using Compression.Lib.Encoders;
 
 namespace Compression.Lib.Plugins
 {
-    internal class DummyEncoderCliPlugin : ICliEncoderPlugin
+    public class DummyEncoderCliPlugin : ICliEncoderPlugin
     {
         public string Name => "dummy";
 

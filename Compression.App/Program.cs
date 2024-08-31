@@ -8,8 +8,7 @@ namespace Compression.App
     {
         static void Main(string[] args)
         {
-            // TODO(improvement): load dynamically
-            var plugins = CliPluginHelpers.GetDefaultPlugins();
+            var plugins = PluginLoader.Load<ICliEncoderPlugin>();
 
             var runner = new CliRunner(plugins);
             runner.Run(args, new FileOrConsoleStreamProvider(), () => Console.WriteLine(ArgumentParser.HelpText));
