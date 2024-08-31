@@ -1,12 +1,11 @@
 ﻿using Compression.Lib.Encoders;
 using Compression.Lib.Framework;
+using Compression.Test.Encoders;
 
 namespace Compression.App.Parsing
 {
-    internal static class ArgumentParser
+    public static class ArgumentParser
     {
-        private static readonly PipelineOptions DummyOptions = new PipelineOptions(null, null, []);
-
         public static readonly string HelpText = @"
 Encode a stream of bytes with the specified sequence of encoders.
 
@@ -31,7 +30,11 @@ cli --input in.txt --output out.txt --encoders rle,other
 
         public static bool TryParse(string[] args, out PipelineOptions options)
         {
-            options = DummyOptions;
+            options = PipelineOptions.Dummy;
+            if (args.Length == 0)
+            {
+                return false;
+            }
 
             string? inputFile = null;
             string? outputFile = null;
@@ -127,6 +130,9 @@ cli --input in.txt --output out.txt --encoders rle,other
                     break;
                 case "rle-d":
                     result = new RunLengthDecoder();
+                    break;
+                case "dummy":
+                    result = new DummyEncoder();
                     break;
                 default:
                     result = null;

@@ -2,7 +2,7 @@
 
 namespace Compression.Test.Encoders
 {
-    internal class DummyEncoder : EncoderMiddlewareBase
+    public class DummyEncoder : EncoderMiddlewareBase
     {
         public DummyEncoder(IEncoderMiddleware? next = null) : base(next)
         {
