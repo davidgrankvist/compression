@@ -5,7 +5,9 @@ namespace Compression.Lib.Plugins
 {
     public class RunLengthDecoderCliPlugin : ICliEncoderPlugin
     {
-        public string Name => "rle-d";
+        public string Id => "rle-d";
+
+        public string Name => "Run Length Decoder";
 
         public IEncoderMiddleware CreateEncoder()
         {

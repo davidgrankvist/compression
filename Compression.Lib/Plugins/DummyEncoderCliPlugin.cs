@@ -5,7 +5,9 @@ namespace Compression.Lib.Plugins
 {
     public class DummyEncoderCliPlugin : ICliEncoderPlugin
     {
-        public string Name => "dummy";
+        public string Id => "dummy";
+
+        public string Name => "Dummy encoder";
 
         public IEncoderMiddleware CreateEncoder()
         {

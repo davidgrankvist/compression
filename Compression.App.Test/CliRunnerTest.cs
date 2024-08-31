@@ -19,8 +19,8 @@ namespace Compression.App.Test
                 numCalls++;
             };
 
-            RunPipeline(args, defaultAction, []);
-            RunPipeline(argsAbbrev, defaultAction, []);
+            RunPipeline(args, defaultAction, null, []);
+            RunPipeline(argsAbbrev, defaultAction, null, []);
 
             Assert.AreEqual(2, numCalls);
         }
@@ -36,7 +36,7 @@ namespace Compression.App.Test
                 numCalls++;
             };
 
-            RunPipeline(args, defaultAction, []);
+            RunPipeline(args, defaultAction, null, []);
 
             Assert.AreEqual(1, numCalls);
         }
@@ -91,24 +91,42 @@ namespace Compression.App.Test
             CheckPipeline(argsAbbrev, input, input);
         }
 
-        private static void CheckPipeline(string[] args, Action? defaultAction, byte[] input, byte[] expectedOutput)
+        [TestMethod]
+        public void ShouldCallListActionWhenListIsSet()
         {
-            var output = RunPipeline(args, defaultAction, input, expectedOutput.Length);
+            var args = new[] { "--list" };
+            var argsAbbrev = new[] { "-l" };
+
+            var numCalls = 0;
+            var listAction = (ICliEncoderPlugin[] _) =>
+            {
+                numCalls++;
+            };
+
+            RunPipeline(args, null, listAction, []);
+            RunPipeline(argsAbbrev, null, listAction, []);
+
+            Assert.AreEqual(2, numCalls);
+        }
+
+        private static void CheckPipeline(string[] args, Action? defaultAction, Action<ICliEncoderPlugin[]>? listAction, byte[] input, byte[] expectedOutput)
+        {
+            var output = RunPipeline(args, defaultAction, listAction, input, expectedOutput.Length);
             Assert.IsTrue(expectedOutput.SequenceEqual(output));
         }
 
         private static void CheckPipeline(string[] args, byte[] input, byte[] expectedOutput)
         {
-            CheckPipeline(args, null, input, expectedOutput);
+            CheckPipeline(args, null, null, input, expectedOutput);
         }
 
-        private static byte[] RunPipeline(string[] args, Action? defaultAction, byte[] input, int? outputSize = null)
+        private static byte[] RunPipeline(string[] args, Action? defaultAction, Action<ICliEncoderPlugin[]>? listAction, byte[] input, int? outputSize = null)
         {
             var outputBuffer = new byte[outputSize ?? input.Length];
             var streamProvider = new MemoryStreamProvider(input, outputBuffer);
 
             var cliRunner = new CliRunner(CliPluginHelpers.GetDefaultPlugins());
-            cliRunner.Run(args, streamProvider, defaultAction);
+            cliRunner.Run(args, streamProvider, defaultAction, listAction);
 
             return outputBuffer;
         }

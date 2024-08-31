@@ -26,6 +26,7 @@ Encode a stream of bytes with the specified sequence of encoders.
 --input, -i Input file (default: STDIN)
 --output, -o Output file (default: STDOUT)
 --encoders, -e Comma separated list of encoders
+--list, -l List available encoders
 --help, -h Output help text
 
 Example:

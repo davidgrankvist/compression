@@ -1,5 +1,4 @@
-﻿using Compression.App.Parsing;
-using Compression.App.Running;
+﻿using Compression.App.Running;
 using Compression.Lib.Plugins;
 
 namespace Compression.App
@@ -11,7 +10,7 @@ namespace Compression.App
             var plugins = PluginLoader.Load<ICliEncoderPlugin>();
 
             var runner = new CliRunner(plugins);
-            runner.Run(args, new FileOrConsoleStreamProvider(), () => Console.WriteLine(ArgumentParser.HelpText));
+            runner.Run(args, new FileOrConsoleStreamProvider(), CliRunnerActions.OutputHelp, CliRunnerActions.ListEncoders);
         }
     }
 }

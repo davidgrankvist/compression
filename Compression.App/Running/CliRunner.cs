@@ -6,21 +6,31 @@ namespace Compression.App.Running
     public class CliRunner
     {
         private readonly ArgumentParser parser;
+        private readonly ICliEncoderPlugin[] plugins;
 
         public CliRunner(ICliEncoderPlugin[] plugins)
         {
+            this.plugins = plugins;
             parser = new ArgumentParser(plugins);
         }
 
-        public void Run(string[] args, IPipelineStreamProvider streamProvider, Action? defaultAction = null)
+        public void Run(string[] args, IPipelineStreamProvider streamProvider, Action? defaultAction = null, Action<ICliEncoderPlugin[]>? listEncoders = null)
         {
-            if (parser.TryParse(args, out var options))
+            if (parser.TryParse(args, out var result))
             {
-                PipelineRunner.Run(options, streamProvider);
+                PipelineRunner.Run(result.Options, streamProvider);
             }
             else
             {
-                defaultAction?.Invoke();
+                switch (result.Mode)
+                {
+                    case ParserOutputMode.List:
+                        listEncoders?.Invoke(plugins);
+                        break;
+                    default:
+                        defaultAction?.Invoke();
+                        break;
+                }
             }
         }
     }

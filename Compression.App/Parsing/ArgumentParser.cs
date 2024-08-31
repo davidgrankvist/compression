@@ -11,6 +11,7 @@ Encode a stream of bytes with the specified sequence of encoders.
 --input, -i Input file (default: STDIN)
 --output, -o Output file (default: STDOUT)
 --encoders, -e Comma separated list of encoders
+--list, -l List available encoders
 --help, -h Output help text
 
 Example:
@@ -25,18 +26,22 @@ cli --input in.txt --output out.txt --encoders rle,other
             Encoders,
             Help,
             Value,
+            ListEncoders,
         }
 
         private readonly Dictionary<string, ICliEncoderPlugin> pluginByName;
 
         public ArgumentParser(ICliEncoderPlugin[] plugins)
         {
-            pluginByName = plugins.Select(plugin => (plugin.Name, plugin)).ToDictionary();
+            pluginByName = plugins.Select(plugin => (plugin.Id, plugin)).ToDictionary();
         }
 
-        public bool TryParse(string[] args, out PipelineOptions options)
+        public bool TryParse(string[] args, out ArgumentParserResult result)
         {
-            options = PipelineOptions.Dummy;
+            var options = PipelineOptions.Dummy;
+            var mode = ParserOutputMode.Help;
+            result = new ArgumentParserResult(options, mode);
+
             if (args.Length == 0)
             {
                 return false;
@@ -46,6 +51,7 @@ cli --input in.txt --output out.txt --encoders rle,other
             string? outputFile = null;
             IEncoderMiddleware[]? encoders = null;
             var didParseHelp = false;
+            var didParseListEncoders = false;
 
             for (var i = 1; i < args.Length; i++)
             {
@@ -68,6 +74,9 @@ cli --input in.txt --output out.txt --encoders rle,other
                     case ArgType.Help:
                         didParseHelp = true;
                         break;
+                    case ArgType.ListEncoders:
+                        didParseListEncoders = true;
+                        break;
                     case ArgType.Value:
                     default:
                         break;
@@ -78,13 +87,29 @@ cli --input in.txt --output out.txt --encoders rle,other
             {
                 didParseHelp = true;
             }
+            else if (last == ArgType.ListEncoders)
+            {
+                didParseListEncoders = true;
+            }
 
-            if (didParseHelp || encoders == null)
+            if (didParseHelp)
+            {
+                return false;
+            }
+
+            if (didParseListEncoders)
+            {
+                result = new ArgumentParserResult(options, ParserOutputMode.List);
+                return false;
+            }
+
+            if (encoders == null)
             {
                 return false;
             }
 
             options = new PipelineOptions(inputFile, outputFile, encoders);
+            result = new ArgumentParserResult(options, ParserOutputMode.Encode);
             return true;
         }
 
@@ -108,6 +133,10 @@ cli --input in.txt --output out.txt --encoders rle,other
                 case "--help":
                 case "-h":
                     result = ArgType.Help;
+                    break;
+                case "--list":
+                case "-l":
+                    result = ArgType.ListEncoders;
                     break;
                 default:
                     result = ArgType.Value;
