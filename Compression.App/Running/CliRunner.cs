@@ -1,12 +1,20 @@
 ﻿using Compression.App.Parsing;
+using Compression.Lib.Plugins;
 
 namespace Compression.App.Running
 {
-    public static class CliRunner
+    public class CliRunner
     {
-        public static void Run(string[] args, IPipelineStreamProvider streamProvider, Action? defaultAction = null)
+        private readonly ArgumentParser parser;
+
+        public CliRunner(ICliEncoderPlugin[] plugins)
         {
-            if (ArgumentParser.TryParse(args, out var options))
+            parser = new ArgumentParser(plugins);
+        }
+
+        public void Run(string[] args, IPipelineStreamProvider streamProvider, Action? defaultAction = null)
+        {
+            if (parser.TryParse(args, out var options))
             {
                 PipelineRunner.Run(options, streamProvider);
             }

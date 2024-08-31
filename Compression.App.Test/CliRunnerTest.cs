@@ -1,5 +1,6 @@
 ﻿using Compression.App.Running;
 using Compression.App.Test.Helpers;
+using Compression.Lib.Plugins;
 
 namespace Compression.App.Test
 {
@@ -106,7 +107,8 @@ namespace Compression.App.Test
             var outputBuffer = new byte[outputSize ?? input.Length];
             var streamProvider = new MemoryStreamProvider(input, outputBuffer);
 
-            CliRunner.Run(args, streamProvider, defaultAction);
+            var cliRunner = new CliRunner(CliPluginHelpers.GetDefaultPlugins());
+            cliRunner.Run(args, streamProvider, defaultAction);
 
             return outputBuffer;
         }

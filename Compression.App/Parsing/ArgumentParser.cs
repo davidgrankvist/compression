@@ -1,10 +1,9 @@
-﻿using Compression.Lib.Encoders;
-using Compression.Lib.Framework;
-using Compression.Test.Encoders;
+﻿using Compression.Lib.Framework;
+using Compression.Lib.Plugins;
 
 namespace Compression.App.Parsing
 {
-    public static class ArgumentParser
+    public class ArgumentParser
     {
         public static readonly string HelpText = @"
 Encode a stream of bytes with the specified sequence of encoders.
@@ -28,7 +27,14 @@ cli --input in.txt --output out.txt --encoders rle,other
             Value,
         }
 
-        public static bool TryParse(string[] args, out PipelineOptions options)
+        private readonly Dictionary<string, ICliEncoderPlugin> pluginByName;
+
+        public ArgumentParser(ICliEncoderPlugin[] plugins)
+        {
+            pluginByName = plugins.Select(plugin => (plugin.Name, plugin)).ToDictionary();
+        }
+
+        public bool TryParse(string[] args, out PipelineOptions options)
         {
             options = PipelineOptions.Dummy;
             if (args.Length == 0)
@@ -110,7 +116,7 @@ cli --input in.txt --output out.txt --encoders rle,other
             return result;
         }
 
-        private static IEncoderMiddleware[]? ToEncoders(string[] encoderIds)
+        private IEncoderMiddleware[]? ToEncoders(string[] encoderIds)
         {
             var encoders = (IEncoderMiddleware[])encoderIds
                 .Select(ToEncoder)
@@ -119,24 +125,13 @@ cli --input in.txt --output out.txt --encoders rle,other
             return encoders.Length > 0 ? encoders : null;
         }
 
-        private static IEncoderMiddleware? ToEncoder(string encoderId)
+        private IEncoderMiddleware? ToEncoder(string encoderId)
         {
-            // TODO(improvement): load encoders dynamically from lib and show options in help text
             IEncoderMiddleware? result = null;
-            switch (encoderId)
+
+            if (pluginByName.TryGetValue(encoderId, out var plugin))
             {
-                case "rle":
-                    result = new RunLengthEncoder();
-                    break;
-                case "rle-d":
-                    result = new RunLengthDecoder();
-                    break;
-                case "dummy":
-                    result = new DummyEncoder();
-                    break;
-                default:
-                    result = null;
-                    break;
+                result = plugin.CreateEncoder();
             }
             return result;
         }

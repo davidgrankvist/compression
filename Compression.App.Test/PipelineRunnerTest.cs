@@ -2,7 +2,6 @@
 using Compression.App.Running;
 using Compression.App.Test.Helpers;
 using Compression.Lib.Encoders;
-using Compression.Test.Encoders;
 
 namespace Compression.App.Test
 {

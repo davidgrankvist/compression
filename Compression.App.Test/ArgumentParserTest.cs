@@ -1,5 +1,6 @@
 using Compression.App.Parsing;
-using Compression.Test.Encoders;
+using Compression.Lib.Encoders;
+using Compression.Lib.Plugins;
 
 namespace Compression.App.Test
 {
@@ -112,7 +113,8 @@ namespace Compression.App.Test
         {
             var expectedOpts = expectedOptions ?? PipelineOptions.Dummy;
 
-            var didParse = ArgumentParser.TryParse(input, out var result);
+            var parser = new ArgumentParser(CliPluginHelpers.GetDefaultPlugins());
+            var didParse = parser.TryParse(input, out var result);
             Assert.AreEqual(expectedDidParse, didParse);
 
             Assert.AreEqual(expectedOpts.InputFile, result.InputFile);
