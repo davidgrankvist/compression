@@ -1,4 +1,5 @@
 ﻿using Compression.App.Parsing;
+using Compression.App.Running;
 
 namespace Compression.App
 {
@@ -8,7 +9,7 @@ namespace Compression.App
         {
             if (ArgumentParser.TryParse(args, out var options))
             {
-                PipelineRunner.Run(options);
+                PipelineRunner.Run(options, new FileOrConsoleStreamProvider());
             }
             else
             {
