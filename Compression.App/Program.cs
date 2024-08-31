@@ -7,14 +7,7 @@ namespace Compression.App
     {
         static void Main(string[] args)
         {
-            if (ArgumentParser.TryParse(args, out var options))
-            {
-                PipelineRunner.Run(options, new FileOrConsoleStreamProvider());
-            }
-            else
-            {
-                Console.WriteLine(ArgumentParser.HelpText);
-            }
+            CliRunner.Run(args, new FileOrConsoleStreamProvider(), () => Console.WriteLine(ArgumentParser.HelpText));
         }
     }
 }
